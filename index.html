@@ -96,7 +96,7 @@
 <body>
     <div class="container">
         <h1 style="text-align: center;">元旦晚会抽奖</h1>
-        <button id="startButton" onclick="startLuckyDraw()">开始抽奖</button>
+        <button id="startButton" onclick="debouncedStartLuckyDraw()">开始抽奖</button>
         <h2 id="resultLabel"></h2>
         <p id="congratulationMessage">恭喜！</p>
     </div>
@@ -114,6 +114,15 @@
         ];
         var congratulationMessage = document.getElementById("congratulationMessage");
         var isCongratulating = false; // 表示是否正在进行恭喜特效
+
+        // 防抖函数
+        function debounce(func, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
 
         // 渲染多选框
         function renderCheckboxes() {
@@ -188,6 +197,9 @@
                 }
             }, 100);
         }
+
+        // 防抖动版的抽奖函数
+        const debouncedStartLuckyDraw = debounce(startLuckyDraw, 1000);
 
         // 初始化
         renderCheckboxes();
