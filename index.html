@@ -11,7 +11,6 @@
             padding: 0;
         }
 
-        /* 抽奖容器 */
         .container {
             max-width: 100%;
             margin: 20px;
@@ -22,14 +21,6 @@
             text-align: center;
         }
 
-        /* 祝贺特效 */
-        @keyframes congratulation {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* 抽奖结果标签样式 */
         h2#resultLabel {
             font-size: 24px;
             text-align: center;
@@ -40,7 +31,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* 抽奖按钮样式 */
         #startButton {
             display: block;
             width: 100%;
@@ -56,7 +46,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* 恭喜信息样式 */
         #congratulationMessage {
             text-align: center;
             font-size: 30px;
@@ -65,7 +54,23 @@
             margin-top: 10px;
         }
 
-        /* Responsiveness for mobile devices */
+        .checkbox-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .checkbox-item {
+            margin: 5px 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item label {
+            margin-left: 5px;
+        }
+
         @media only screen and (max-width: 600px) {
             .container {
                 margin: 10px;
@@ -90,43 +95,86 @@
 </head>
 <body>
     <div class="container">
-        <!-- 添加logo图片 -->
-        <!-- img id="logo" src="logo.jpg" alt="Logo" width="300" -->
-
         <h1 style="text-align: center;">元旦晚会抽奖</h1>
         <button id="startButton" onclick="startLuckyDraw()">开始抽奖</button>
         <h2 id="resultLabel"></h2>
-
-        <!-- 添加恭喜信息 -->
         <p id="congratulationMessage">恭喜！</p>
     </div>
 
-    <!-- JavaScript代码 -->
+    <div class="checkbox-container" id="checkboxContainer"></div>
+
     <script>
+        var candidates = [
+            '王雨辰', '王艺辰', '陈思辰', '吴越', '石可一', '黄江沅', '刘青岚', 
+            '斯品瀚', '张桐和', '徐子森', '陈珖珧', '米晨仪', '姚朕', '孔梓琪', 
+            '曹恩曦', '程宇泽', '竺炯介', '牛怡霏', '郑羽周', '楼昊', '董乔龙', 
+            '刘恒铄', '尹舒冉', '童灏宇', '姚懿宸', '朱智远', '苏中行', '方灵均', 
+            '米玮旗', '吴翊滔', '林睿恒', '靳宇轩', '佘力行', '雷杰睿', '谢煦然', 
+            '华词韫', '李雨桐', '柴润欣', '周怡晨', '胡安妮', '喻茗杰', '余佳欣', '陈昀熙'
+        ];
         var congratulationMessage = document.getElementById("congratulationMessage");
         var isCongratulating = false; // 表示是否正在进行恭喜特效
+
+        // 渲染多选框
+        function renderCheckboxes() {
+            var container = document.getElementById("checkboxContainer");
+            container.innerHTML = ""; // 清空现有内容
+
+            candidates.forEach(function(name) {
+                var checkboxItem = document.createElement("div");
+                checkboxItem.className = "checkbox-item";
+
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.value = name;
+                checkbox.onchange = function() {
+                    if (checkbox.checked) {
+                        removeCandidate(name);
+                    }
+                };
+
+                var label = document.createElement("label");
+                label.textContent = name;
+
+                checkboxItem.appendChild(checkbox);
+                checkboxItem.appendChild(label);
+                container.appendChild(checkboxItem);
+            });
+        }
+
+        // 移除候选人
+        function removeCandidate(name) {
+            var index = candidates.indexOf(name);
+            if (index > -1) {
+                candidates.splice(index, 1);
+                renderCheckboxes();
+            }
+        }
 
         function startLuckyDraw() {
             if (isCongratulating) return; // 防止重复点击
 
-            var candidates = [
-    '王雨辰', '王艺辰', '陈思辰', '吴越', '石可一', '黄江沅', '刘青岚', 
-    '斯品瀚', '张桐和', '徐子森', '陈珖珧', '米晨仪', '姚朕', '孔梓琪', 
-    '曹恩曦', '程宇泽', '竺炯介', '牛怡霏', '郑羽周', '楼昊', '董乔龙', 
-    '刘恒铄', '尹舒冉', '童灏宇', '姚懿宸', '朱智远', '苏中行', '方灵均', 
-    '米玮旗', '吴翊滔', '林睿恒', '靳宇轩', '佘力行', '雷杰睿', '谢煦然', 
-    '华词韫', '李雨桐', '柴润欣', '周怡晨', '胡安妮', '喻茗杰', '余佳欣', '陈昀熙'
-];
-// 候选人名单
+            if (candidates.length === 0) {
+                alert("抽完啦！");
+                return;
+            }
+
             var resultLabel = document.getElementById("resultLabel");
             var count = 0;
-
             var flashingInterval = setInterval(function() {
                 resultLabel.textContent = candidates[Math.floor(Math.random() * candidates.length)];
                 count++;
                 congratulationMessage.style.display = "none"; // 隐藏恭喜信息
-                if (count == 50) {
+                if (count === 50) {
                     clearInterval(flashingInterval);
+
+                    // 最终选中一个人
+                    var randomIndex = Math.floor(Math.random() * candidates.length);
+                    var selectedCandidate = candidates[randomIndex];
+                    resultLabel.textContent = selectedCandidate;
+
+                    // 将选中的人从候选列表中移除
+                    removeCandidate(selectedCandidate);
 
                     // 在抽奖结束后添加祝贺特效
                     resultLabel.style.animation = "congratulation 1s";
@@ -135,12 +183,14 @@
 
                     setTimeout(function() {
                         resultLabel.style.animation = ""; // 祝贺特效结束后移除动画效果
-                        
                         isCongratulating = false;
                     }, 1000);
                 }
             }, 100);
         }
+
+        // 初始化
+        renderCheckboxes();
     </script>
 </body>
 </html>
