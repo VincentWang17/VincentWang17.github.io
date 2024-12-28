@@ -174,7 +174,7 @@
                 resultLabel.textContent = candidates[Math.floor(Math.random() * candidates.length)];
                 count++;
                 congratulationMessage.style.display = "none"; // 隐藏恭喜信息
-                if (count === 50) {
+                if (count === round(candidates.length * 1.5)) {
                     clearInterval(flashingInterval);
 
                     // 最终选中一个人
