@@ -46,6 +46,11 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        #startButton:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+
         #congratulationMessage {
             text-align: center;
             font-size: 30px;
@@ -112,10 +117,7 @@
             '米玮旗', '吴翊滔', '林睿恒', '靳宇轩', '佘力行', '雷杰睿', '谢煦然', 
             '华词韫', '李雨桐', '柴润欣', '周怡晨', '胡安妮', '喻茗杰', '余佳欣', '陈昀熙'
         ];
-        var congratulationMessage = document.getElementById("congratulationMessage");
-        var isCongratulating = false; // 表示是否正在进行恭喜特效
 
-        // 渲染多选框
         function renderCheckboxes() {
             var container = document.getElementById("checkboxContainer");
             container.innerHTML = ""; // 清空现有内容
@@ -142,7 +144,6 @@
             });
         }
 
-        // 移除候选人
         function removeCandidate(name) {
             var index = candidates.indexOf(name);
             if (index > -1) {
@@ -152,14 +153,16 @@
         }
 
         function startLuckyDraw() {
-            if (isCongratulating) return; // 防止重复点击
-
             if (candidates.length === 0) {
                 alert("抽完啦！");
                 return;
             }
 
+            var startButton = document.getElementById("startButton");
+            startButton.disabled = true; // 禁用按钮
+
             var resultLabel = document.getElementById("resultLabel");
+            var congratulationMessage = document.getElementById("congratulationMessage");
             var count = 0;
             var flashLimit = Math.round(candidates.length * 1.5); // 动态计算闪烁次数
 
@@ -167,6 +170,7 @@
                 resultLabel.textContent = candidates[Math.floor(Math.random() * candidates.length)];
                 count++;
                 congratulationMessage.style.display = "none"; // 隐藏恭喜信息
+
                 if (count === flashLimit) {
                     clearInterval(flashingInterval);
 
@@ -178,14 +182,10 @@
                     // 将选中的人从候选列表中移除
                     removeCandidate(selectedCandidate);
 
-                    // 在抽奖结束后添加祝贺特效
-                    resultLabel.style.animation = "congratulation 1s";
-                    congratulationMessage.style.display = "block"; // 显示恭喜信息
-                    isCongratulating = true;
-
+                    // 显示祝贺特效
+                    congratulationMessage.style.display = "block";
                     setTimeout(function() {
-                        resultLabel.style.animation = ""; // 祝贺特效结束后移除动画效果
-                        isCongratulating = false;
+                        startButton.disabled = false; // 恢复按钮可用
                     }, 1000);
                 }
             }, 100);
